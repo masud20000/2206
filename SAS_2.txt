@@ -1,0 +1,583 @@
+1.Explain and implement Discrete Fourier Transformer (DFT).
+
+
+
+
+clc;
+close all;
+clear all;
+
+x = input('Enter the sequence x(n) = ');
+N = input('Input N:');
+len = length(x);
+disp(N);
+
+subplot(2,1,1);
+stem(x);
+xlabel('n');
+ylabel('x(n)');
+title('Input Signal');
+grid on;
+
+% Zero-padding
+if N > len
+    x = [x, zeros(1, N-len)];
+end
+
+% DFT computation
+y = zeros(1, N);
+for k = 0:N-1
+    for n = 0:N-1
+        y(k+1) = y(k+1) + x(n+1)*exp((-1i*2*pi*k*n)/N);
+    end
+end
+
+disp(y);
+
+subplot(2,1,2);
+stem(0:N-1, abs(y));
+xlabel('k');
+ylabel('x(k)');
+title('DFT Values');
+grid on;
+
+
+
+
+----------------------------------------------------------------------------------------------------
+
+
+1-5.Explain and implement Inverse Discrete Fourier Transformer (IDFT).
+
+
+
+clc;
+close all;
+clear all;
+
+x = [4 0 0 0];
+N = 4; %for 4-point IDFT
+
+subplot(2,1,1);
+stem(0:N-1,x);
+xlabel('k');
+ylabel('x(k)');
+title('Input Signal');
+grid on;
+
+% IDFT computation
+m = zeros(1,N);
+for n = 0:N-1
+    for k = 0:N-1
+        m(n+1) = m(n+1) + ((1/N)*x(k+1).*exp((1i*2*pi*k*n)/N));
+    end
+end
+
+disp(m);
+
+subplot(2,1,2);
+stem(0:N-1, m);
+xlabel('n');
+ylabel('x(n)');
+title('IDFT Values');
+grid on;
+
+
+
+----------------------------------------------------------------------------------------------------
+
+2.Let x(n)={1,2,3,4,5,6,7,6,5,4,3,2,1}. 
+Determine and plot the following sequence:
+ x (n)=2x(n-5)-3x(n+4).
+
+
+
+clc;
+clear all;
+close all;
+
+% Input
+x = [1 2 3 4 5 6 7 6 5 4 3 2 1];
+n = -2:10;
+
+% Subplot 1: Plot of x(n)
+subplot(4,1,1);
+stem(n, x);
+title('Plot of x(n)');
+xlabel('n');
+ylabel('x(n)');
+axis([-7,16,0,12]);
+
+% First shifting of x(n)
+n1 = 3:15;
+
+% Subplot 2: Plot of x(n-5)
+subplot(4,1,2);
+stem(n1, x);
+title('Plot of x(n-5)');
+xlabel('n');
+ylabel('x(n-5)');
+axis([-7,16,0,12]);
+
+% Second shifting of x(n)
+n2 = -6:6;
+
+% Subplot 3: Plot of x(n+4)
+subplot(4,1,3);
+stem(n2, x);
+title('Plot of x(n+4)');
+xlabel('n');
+ylabel('x(n+4)');
+axis([-7,16,0,12]);
+
+% Compute y(n) using the given formula
+m = min(min(n1), min(n2)): max(max(n1), max(n2));
+y1 = zeros(1, length(m));
+temp = 1;
+for i = 1:length(m)
+    if(m(i) < min(n1) || m(i) > max(n1))
+        y1(i) = 0;
+    else 
+        y1(i) = x(temp);
+        temp = temp+1;
+    end
+end
+y2 = zeros(1, length(m));
+temp = 1;
+for i = 1:length(m)
+    if(m(i) < min(n2) || m(i) > max(n2))
+        y2(i) = 0;
+    else
+        y2(i) = x(temp);
+        temp = temp+1;
+    end
+end
+y = 2.*y1 - 3.*y2;
+
+% Subplot 4: Plot of y(n)
+subplot(4,1,4);
+stem(m, y);
+title('Plot of y(n)');
+xlabel('n');
+ylabel('y(n)');
+axis([-7,16,-20,20]);
+grid on;
+
+
+----------------------------------------------------------------------------------------
+
+3. Write a MATLAB program to perform the following operations:
+(i) Sampling (ii) Quantization (iii) coding.
+
+
+
+
+
+clc;
+close all;
+clear all;
+A = 5;
+f = 5;
+t = 0:0.01:1;
+x = A*sin(2*pi*f*t);
+subplot(4,1,1);
+plot(t,x);
+title('Continuos time signal');
+xlabel('Time');
+ylabel('Amplitude');
+grid on;
+%%After sampling discrete time signal
+subplot(4,1,2);
+stem(t,x);
+title('Sampling');
+xlabel('Time');
+ylabel('Amplitude');
+%DC level + discrete time signal
+x1 = A+x;
+subplot(4,1,3);
+stem(t,x1);
+title('DC level + decrete time signal');
+xlabel('Time');
+ylabel('Amplitude');
+grid on;
+%%Quantization
+x2 = round(x1);
+subplot(4,1,4);
+stem(t,x2);
+title('Quantization');
+xlabel('Time');
+ylabel('Amplitude');
+grid on;
+%%Coding
+x3 = dec2bin(x2);
+disp(x3);
+
+
+
+------------------------------------------------------------------------------------
+
+4.. Determine the and plot following sequences over the indicated 
+interval using MATLAB: x(n)=2δ(n+2)- δ (n-4) ; -5 ≤n ≤5.
+
+
+
+
+% Define the sequence x(n)
+n = -5:5;
+x = 2*[(n+2)==0] - [(n-4)==0];
+
+% Plot the sequence
+stem(n, x);
+title('Plot of x(n) = 2*del(n+2)-del(n-4)');
+xlabel('n');
+ylabel('x(n)');
+axis([-6 6 -3 3]);
+grid on;
+
+
+
+-----------------------------------------------------------------------------------
+
+5.Plot the following signal operations using user define functions:
+(i) Addition (ii) Folding
+
+
+
+
+clc;
+clear all;
+close all;
+
+figure(1);
+
+x1 = [1 0 3 4];
+n1 = -2:1;
+
+subplot(3,1,1);
+stem(n1, x1);
+title('Plot of x1[n]');
+xlabel('n');
+ylabel('x[n]');
+axis([-3,4,0,6]);
+grid on;
+
+x2 = [1 1 1 1];
+n2 = 0:3;
+subplot(3,1,2);
+stem(n2, x2);
+title('Plot of x2[n]');
+xlabel('n');
+ylabel('x[n]');
+axis([-3,4,0,6]);
+grid on;
+
+m = min(min(n1), min(n2)): max(max(n1), max(n2));
+y1 = zeros(1, length(m));
+temp = 1;
+for i = 1:length(m)
+    if(m(i) < min(n1) || m(i) > max(n1))
+        y1(i) = 0;
+    else 
+        y1(i) = x1(temp);
+        temp = temp+1;
+    end
+end
+y2 = zeros(1, length(m));
+temp = 1;
+for i = 1:length(m)
+    if(m(i) < min(n2) || m(i) > max(n2))
+        y2(i) = 0;
+    else
+        y2(i) = x2(temp);
+        temp = temp+1;
+    end
+end
+y = y1 + y2;
+subplot(3,1,3);
+stem(m, y);
+title('Addition of Signals');
+xlabel('n');
+ylabel('y[n]');
+axis([-3,4,0,6]);
+grid on;
+
+figure(2);
+x = [3 -1 0 -4];
+m = -1:2;
+subplot(2,1,1);
+stem(m,x);
+title('Original Signal x[n]');
+xlabel('n');
+ylabel('x[n]');
+axis([-3,3,-5,4]);
+grid on;
+
+xbar = fliplr(x);
+nbar = fliplr(-m);
+subplot(2,1,2);
+stem(nbar,xbar);
+title('Folding of Signal');
+xlabel('n');
+ylabel('x[-n]');
+axis([-3,3,-5,4]);
+grid on;
+
+
+
+----------------------------------------------------------------------------------------
+
+6.. Plot the following signal operations using user define function:
+(i) Multiplication (ii) Shifting 
+
+
+
+
+clc;
+clear all;
+close all;
+
+figure(1);
+
+x1 = [1 2 3 4];
+n1 = -2:1;
+
+subplot(3,1,1);
+stem(n1, x1);
+title('Plot of x1[n]');
+xlabel('n');
+ylabel('x[n]');
+axis([-3,4,0,5]);
+grid on;
+
+x2 = [1 1 1 1];
+n2 = 0:3;
+
+subplot(3,1,2);
+stem(n2, x2);
+title('Plot of x2[n]');
+xlabel('n');
+ylabel('x[n]');
+axis([-3,4,0,5]);
+grid on;
+
+m = min(min(n1), min(n2)): max(max(n1), max(n2));
+y1 = zeros(1, length(m));
+temp = 1;
+for i = 1:length(m)
+    if(m(i) < min(n1) || m(i) > max(n1))
+        y1(i) = 0;
+    else 
+        y1(i) = x1(temp);
+        temp = temp+1;
+    end
+end
+y2 = zeros(1, length(m));
+temp = 1;
+for i = 1:length(m)
+    if(m(i) < min(n2) || m(i) > max(n2))
+        y2(i) = 0;
+    else
+        y2(i) = x2(temp);
+        temp = temp+1;
+    end
+end
+y = y1 .* y2;
+subplot(3,1,3);
+stem(m, y);
+title('Multiplication of Signals');
+xlabel('n');
+ylabel('y[n]');
+axis([-3,4,0,5]);
+grid on;
+
+figure(2);
+x = [-2 3 0 1 5];
+m = -2:2;
+subplot(3,1,1);
+stem(m,x);
+title('Original Signal x[n]');
+xlabel('n');
+ylabel('x[n]');
+axis([-7,8,-3,6]);
+grid on;
+
+m1=5;
+a = m+m1;
+subplot(3,1,2);
+stem(a,x);
+title('Time shifted signal, x[n-5]');
+xlabel('n');
+ylabel('x[n-5]');
+axis([-7,8,-3,6]);
+grid on;
+
+m2=4;
+a = m-m2;
+subplot(3,1,3);
+stem(a,x);
+title('Time shifted signal, x[n+4]');
+xlabel('n');
+ylabel('x[n+4]');
+axis([-7,8,-3,6]);
+grid on;
+
+
+
+---------------------------------------------------------------------------------
+
+7.Using MATLAB to plot the Fourier Transform of a time function , 
+the aperiodic pulse shown below:
+
+
+
+
+clc;
+clear all;
+close all;
+
+f = -2:0.01:2;
+x = 4*sinc(4*f);
+subplot(3,1,1);
+plot(f,x);
+xlabel('Time');
+ylabel('Amplitude');
+title('Real part');
+grid on;
+
+subplot(3,1,2);
+plot(f,abs(x));
+xlabel('Time');
+ylabel('Amplitude');
+title('Magnetude part');
+grid on;
+
+subplot(3,1,3);
+plot(f,angle(x));
+xlabel('Time');
+ylabel('Amplitude');
+title('Phase part');
+grid on;
+
+
+
+
+-------------------------------------------------------------------------------
+
+8.Explain and generate sinusoidal wave with different frequency 
+using MATLAB.
+
+
+
+clc;
+close all;
+clear all;
+f = 20;
+t = 1/f;
+t1 = 0:t/100:1;
+a = t;
+y = a*sin(2*pi*f*t1);
+subplot(2,1,1);
+plot(t1,y);
+xlabel('t');
+ylabel('Amplitude');
+grid on;
+
+Am = 1;
+fm = 5;
+t = 0:0.001:1;
+wm = 2*pi*fm;
+msg_sig = Am*sin(wm*t);
+subplot(2,1,2);
+plot(t,msg_sig);
+xlabel('t');
+ylabel('Amplitude');
+grid on;
+
+
+
+
+-----------------------------------------------------------------------------
+
+9.. Explain and Implementation of following elementary discrete signal 
+using MATLAB
+(i) The unit sample sequence 
+(ii) The unit step signal
+(iii) The unit ramp signal
+
+
+
+
+clc;
+clear all;
+close all;
+t = -10:1:10;
+unitstep = t >= 0;
+unitsample = t == 0;
+unitramp = t.*unitstep;
+
+subplot(3,1,1);
+stem(t,unitstep);
+xlabel('Time');
+ylabel('Amplitude');
+title('Unit step Discrete time');
+grid on;
+
+subplot(3,1,2);
+stem(t,unitsample);
+xlabel('Time');
+ylabel('Amplitude');
+title('Unit Sample Discrete time');
+grid on;
+
+subplot(3,1,3);
+stem(t,unitramp);
+xlabel('Time');
+ylabel('Amplitude');
+title('Unit ramp Discrete time');
+grid on;
+
+
+
+--------------------------------------------------------------------------------
+
+10.Write a matlab code to determine the frequency response H (ejw) of a system 
+characterized by h(n)=(0.9)^nu(n).Plot the magnitude and phase responses.
+
+
+
+clc;
+clear all;
+close all;
+
+% Define the system impulse response h(n)
+w = 0:0.001:1;
+H = exp(1j*w*pi)./(exp(1j*w*pi)-0.9*ones(1,1001));
+subplot(2,1,1);
+plot(w,abs(H));
+grid on;
+title('Magnitude Response');
+xlabel('Frequency in pi Units');
+ylabel('Magnitude |H|');
+subplot(2,1,2);
+plot(w, angle(H)/pi);
+grid on;
+title('Phase response');
+xlabel('Frequency in pi units');
+ylabel('Phase in pi radians');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
